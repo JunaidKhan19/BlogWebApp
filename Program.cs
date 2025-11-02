@@ -1,3 +1,6 @@
+using BlogWebApplication.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace BlogWebApplication
 {
     public class Program
@@ -8,6 +11,12 @@ namespace BlogWebApplication
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            //configure DbContext with SQL Server
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                //getconnection string from appsettings.json
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
 
             var app = builder.Build();
 

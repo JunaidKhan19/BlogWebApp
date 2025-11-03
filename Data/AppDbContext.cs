@@ -9,7 +9,6 @@ namespace BlogWebApplication.Data
         {
         }
 
-
         public DbSet<Category> Categories { get; set; } //this line will create table for this model
 
         public DbSet<Post> Posts { get; set; } //this line will create table for this model

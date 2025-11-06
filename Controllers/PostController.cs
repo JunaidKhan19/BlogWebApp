@@ -2,6 +2,7 @@
 using BlogWebApplication.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogWebApplication.Controllers
 {
@@ -18,10 +19,38 @@ namespace BlogWebApplication.Controllers
             _webHostEnvironment = webHostEnvironment; //injecting db dependency so that it creates db object automatically
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        [HttpGet] // Create action method to render the Posts
+        public IActionResult Index(int? categoryId)
         {
-            return View();
+            var postQuery = _context.Posts.Include(p => p.Category).AsQueryable();
+            if (categoryId.HasValue)
+            {
+                postQuery = postQuery.Where(p => p.CategoryId == categoryId);
+            }
+
+            var posts = postQuery.ToList();//deferred execution to get posts based on query
+
+            ViewBag.Categories = _context.Categories.ToList();
+
+            return View(posts);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var post = _context.Posts.Include(p => p.Category).Include(p => p.Comments).FirstOrDefault(p => p.Id == id);
+
+            if(post == null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
         }
 
         [HttpGet] // Create action method to render the create post view
@@ -58,6 +87,15 @@ namespace BlogWebApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+
+            postViewModel.Categories = _context.Categories.Select(c =>
+                new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name,
+                }
+            ).ToList();
+
             return View(postViewModel);
         }
 

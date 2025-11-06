@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,6 +27,7 @@ namespace BlogWebApplication.Models
         [DataType(DataType.Date)] //Validation attribute to specify data type
         public DateTime PublishedDate { get; set; } = DateTime.Now;
 
+        [DisplayName("Category")]
         [ForeignKey("Category")] //specifies foreign key relationship]
         public int CategoryId { get; set; } //foreign key property
 

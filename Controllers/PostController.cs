@@ -1,4 +1,5 @@
 ﻿using BlogWebApplication.Data;
+using BlogWebApplication.Models;
 using BlogWebApplication.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -129,6 +130,21 @@ namespace BlogWebApplication.Controllers
                 return "Error Uploading Images:" + ex.Message;
             }
             return "/images/" + fileName;
+        }
+    
+        public JsonResult AddComment([FromBody]Comment comment)
+        {
+            comment.CommentDate = DateTime.Now;
+            _context.Comments.Add(comment);
+            _context.SaveChanges();
+
+            return Json(new
+            {
+                success = true,
+                username = comment.UserName,
+                commentContent = comment.CommentContent,
+                commentDate = comment.CommentDate.ToString("MMMM dd,yyyy")
+            });
         }
     }
 }

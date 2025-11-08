@@ -131,7 +131,94 @@ namespace BlogWebApplication.Controllers
             }
             return "/images/" + fileName;
         }
-    
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (postFromDb == null)
+            {
+                return NotFound();
+            }
+
+            EditPostViewModel editPostViewModel = new EditPostViewModel()
+            {
+                Post = postFromDb,
+                Categories = _context.Categories.Select(c =>
+                    new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name,
+                    }
+                ).ToList(),
+            };
+
+            return View(editPostViewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditPostViewModel editPostViewModel)
+        {
+            if (editPostViewModel == null)
+            {
+                return View(editPostViewModel);
+            }
+
+            var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == editPostViewModel.Post.Id);
+
+            if(postFromDb == null)
+            {
+                return NotFound();
+            }
+
+            if (editPostViewModel.FeatureImage != null)
+            {
+                var inputFileExtension = Path.GetExtension(editPostViewModel.FeatureImage.FileName).ToLower();
+                bool isAllowed = _allowedExtensions.Contains(inputFileExtension);
+                if (!isAllowed)
+                {
+                    ModelState.AddModelError("", "Invalid Image format. Allowed Image formats are .jpg, .jpeg, .png");
+                    return View(editPostViewModel);
+                }
+
+                // Delete existing image file if it exists
+                if (!string.IsNullOrEmpty(postFromDb.FeatureImagePath))
+                {
+                    var existingfilePath = Path.Combine(
+                        _webHostEnvironment.WebRootPath,
+                        "images",
+                        Path.GetFileName(postFromDb.FeatureImagePath)
+                    );
+
+                    if (System.IO.File.Exists(existingfilePath))
+                    {
+                        System.IO.File.Delete(existingfilePath);
+                    }
+                }
+
+                postFromDb.FeatureImagePath = await UploadFileToFolder(editPostViewModel.FeatureImage);
+            }
+            else 
+            {
+                editPostViewModel.Post.FeatureImagePath = postFromDb.FeatureImagePath;
+            }
+
+            postFromDb.Title = editPostViewModel.Post.Title;
+            postFromDb.Content = editPostViewModel.Post.Content;
+            postFromDb.CategoryId = editPostViewModel.Post.CategoryId;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
         public JsonResult AddComment([FromBody]Comment comment)
         {
             comment.CommentDate = DateTime.Now;

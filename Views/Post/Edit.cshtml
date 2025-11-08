@@ -1,0 +1,96 @@
+﻿@model EditPostViewModel
+
+@{
+	ViewData["Title"] = "Edit Post";
+}
+
+
+<style>
+	.content-wrapper {
+		padding: 20px;
+		max-width: 100%;
+		margin: 0 auto;
+		font-family: 'Sans Serif';
+	}
+</style>
+
+
+<div class="content-wrapper">
+	<div class="row">
+		<div class="col-6">
+			<h2>@ViewData["Title"]</h2>
+		</div>
+
+		<div class="col-6 text-end">
+			<a class="btn btn-primary" asp-action="Index" asp-controller="Post">Back To List</a>
+		</div>
+	</div>
+
+	<hr />
+
+	<form asp-action="Edit" asp-controller="Post" method="post" enctype="multipart/form-data">
+		<div class="validation-summary">
+			<div asp-validation-summary="All" class="text-danger"></div>
+		</div>
+
+		<input type="hidden" asp-for="Post.Id" /> <!-- Hidden field for Post ID in Edit page-->
+		<div class="form-group">
+			<label asp-for="Post.Title"></label>
+			<input asp-for="Post.Title" class="form-control" />
+			<span asp-validation-for="Post.Title" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="Post.CategoryId"></label>
+			<select asp-for="Post.CategoryId" asp-items="Model.Categories" class="form-control"></select>
+			<span asp-validation-for="Post.CategoryId"></span>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="Post.Author"></label>
+			<input asp-for="Post.Author" class="form-control" />
+			<span asp-validation-for="Post.Author" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="Post.Content"></label>
+			<textarea asp-for="Post.Content" class="form-control" rows="5"></textarea>
+			<span asp-validation-for="Post.Content" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="FeatureImage"></label>
+			<input asp-for="FeatureImage" class="form-control" />
+		</div>
+
+		<button type="submit" class="btn btn-primary mt-1">Update</button>
+		<a class="btn btn-secondary mt-1">Back To List</a>
+	</form>
+
+</div>
+
+@section Scripts {
+	<script src="https://cdn.tiny.cloud/1/tn5xqlfumg3opi1uuaoxs5ijk251sit1on3zeozu0nx4fs11/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+
+	<script>
+		tinymce.init({
+			selector: 'textarea',
+			plugins: [
+			// Core editing features
+			'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+			// Your account includes a free trial of TinyMCE premium features
+			// Try the most popular premium features until Nov 17, 2025:
+			'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+			],
+			toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+			tinycomments_mode: 'embedded',
+			tinycomments_author: 'Author name',
+			mergetags_list: [
+			{ value: 'First.Name', title: 'First Name' },
+			{ value: 'Email', title: 'Email' },
+			],
+			ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+			uploadcare_public_key: 'ce106c476b1f79459dce',
+		});
+	</script>
+}

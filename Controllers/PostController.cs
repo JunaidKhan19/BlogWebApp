@@ -219,6 +219,40 @@ namespace BlogWebApplication.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+            if (postFromDb == null) 
+            {
+                return NotFound();
+            }
+
+            return View(postFromDb);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirm(int id)
+        {
+            var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+            if (string.IsNullOrEmpty(postFromDb.FeatureImagePath))
+            {
+                var existingfilePath = Path.Combine(
+                       _webHostEnvironment.WebRootPath,
+                       "images",
+                       Path.GetFileName(postFromDb.FeatureImagePath)
+                   );
+
+                if (System.IO.File.Exists(existingfilePath))
+                {
+                    System.IO.File.Delete(existingfilePath);
+                }
+            }
+            _context.Posts.Remove(postFromDb);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index"); 
+        }
+
         public JsonResult AddComment([FromBody]Comment comment)
         {
             comment.CommentDate = DateTime.Now;

@@ -29,6 +29,14 @@ namespace BlogWebApplication
                 options.Password.RequiredLength = 6;
             }).AddEntityFrameworkStores<AppDbContext>();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Auth/Login"; //redirect to login page if not authenticated
+                options.LogoutPath = "/Auth/Logout";
+                options.ExpireTimeSpan = TimeSpan.FromDays(3); //cookie expiration time
+                options.SlidingExpiration = true; //renew cookie on each request
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

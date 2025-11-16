@@ -1,4 +1,5 @@
 using BlogWebApplication.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogWebApplication
@@ -17,6 +18,16 @@ namespace BlogWebApplication
                 //getconnection string from appsettings.json
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
+
+            //configure IdentityDbContext
+            builder.Services.AddIdentity<IdentityUser,IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+            }).AddEntityFrameworkStores<AppDbContext>();
 
             var app = builder.Build();
 

@@ -87,7 +87,14 @@ namespace BlogWebApplication.Controllers
                 return RedirectToAction("Index", "Post");
             }
 
+            return View(loginViewModel);
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Post");
         }
 
     }

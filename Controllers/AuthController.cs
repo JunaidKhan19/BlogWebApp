@@ -56,5 +56,39 @@ namespace BlogWebApplication.Controllers
             }
             return View(registerViewModel);
         }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel) 
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(loginViewModel.Email);
+
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Email or password is invalid.");
+                    return View(loginViewModel);
+                }
+
+                var signInResult = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, isPersistent: false, lockoutOnFailure: false);
+
+                if (!signInResult.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, "Email or password is invalid.");
+                    return View(loginViewModel);
+                }
+
+                return RedirectToAction("Index", "Post");
+            }
+
+
+        }
+
     }
 }

@@ -32,7 +32,7 @@ namespace BlogWebApplication
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Auth/Login"; //redirect to login page if not authenticated
-                options.LogoutPath = "/Auth/Logout";
+                options.AccessDeniedPath = "/Auth/AccessDenied"; //redirect to access denied page if authorization fails
                 options.ExpireTimeSpan = TimeSpan.FromDays(3); //cookie expiration time
                 options.SlidingExpiration = true; //renew cookie on each request
             });

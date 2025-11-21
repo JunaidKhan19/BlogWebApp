@@ -97,5 +97,9 @@ namespace BlogWebApplication.Controllers
             return RedirectToAction("Index", "Post");
         }
 
-    }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 }

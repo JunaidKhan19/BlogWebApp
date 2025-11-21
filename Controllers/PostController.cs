@@ -1,6 +1,7 @@
 ﻿using BlogWebApplication.Data;
 using BlogWebApplication.Models;
 using BlogWebApplication.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,7 @@ namespace BlogWebApplication.Controllers
         }
 
         [HttpGet] // Create action method to render the create post view
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var postViewModel = new Models.ViewModels.PostViewModel();
@@ -69,6 +71,7 @@ namespace BlogWebApplication.Controllers
         }
 
         [HttpPost] // Create action method to handle form submission
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PostViewModel postViewModel)
         {
             if (ModelState.IsValid)
@@ -133,6 +136,7 @@ namespace BlogWebApplication.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             if(id == null)
@@ -162,8 +166,8 @@ namespace BlogWebApplication.Controllers
             return View(editPostViewModel);
         }
 
-
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(EditPostViewModel editPostViewModel)
         {
             if (editPostViewModel == null)
@@ -220,6 +224,7 @@ namespace BlogWebApplication.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
@@ -232,6 +237,7 @@ namespace BlogWebApplication.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirm(int id)
         {
             var postFromDb = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
@@ -253,6 +259,7 @@ namespace BlogWebApplication.Controllers
             return RedirectToAction("Index"); 
         }
 
+        [Authorize]
         public JsonResult AddComment([FromBody]Comment comment)
         {
             comment.CommentDate = DateTime.Now;
